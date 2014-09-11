@@ -4,12 +4,12 @@ module Dag
   class CreateCorrectnessValidator < ActiveModel::Validator
 
     def validate(record)
-      record.errors[:base] << 'Link already exists between these points' if has_duplicates(record)
-      record.errors[:base] << 'Link already exists in the opposite direction' if has_long_cycles(record)
-      record.errors[:base] << 'Link must start and end in different places' if has_short_cycles(record)
+      record.errors[:base] << I18n.t('acts_as_dag.errors.create.has_duplicatess') if has_duplicates(record)
+      record.errors[:base] << I18n.t('acts_as_dag.errors.create.has_long_cycles') if has_long_cycles(record)
+      record.errors[:base] << I18n.t('acts_as_dag.errors.create.has_short_cycles') if has_short_cycles(record)
       cnt = check_possible(record)
-      record.errors[:base] << 'Cannot create a direct link with a count other than 0' if cnt == 1
-      record.errors[:base] << 'Cannot create an indirect link with a count less than 1' if cnt == 2
+      record.errors[:base] << I18n.t('acts_as_dag.errors.create.direct_nonzero_link') if cnt == 1
+      record.errors[:base] << I18n.t('acts_as_dag.errors.create.indirect_less_than_one') if cnt == 2
     end
 
     private
@@ -39,9 +39,9 @@ module Dag
   class UpdateCorrectnessValidator < ActiveModel::Validator
 
     def validate(record)
-      record.errors[:base] << "No changes" unless record.changed?
-      record.errors[:base] << "Do not manually change the count value" if manual_change(record)
-      record.errors[:base] << "Cannot make a direct link with count 1 indirect" if direct_indirect(record)
+      record.errors[:base] << I18n.t('acts_as_dag.errors.update.no_changes') unless record.changed?
+      record.errors[:base] << I18n.t('acts_as_dag.errors.update.no_manually_change_count') if manual_change(record)
+      record.errors[:base] << I18n.t('acts_as_dag.errors.update.direct_link_with_one_count_indirect') if direct_indirect(record)
     end
 
     private
